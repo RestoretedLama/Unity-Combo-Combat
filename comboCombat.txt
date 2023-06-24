@@ -1,0 +1,68 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Combat : MonoBehaviour
+{
+    private Animator animator;
+    public float cooldownTime = 2f;
+    private float nextFireTime = 0f;
+    public static int noOfClocks = 0;
+    float lastClickedTime = 0;
+    float maxComboDelay = 1;
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if(animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && animator.GetCurrentAnimatorStateInfo(0).IsName("atack3"))
+        {
+            animator.SetBool("hit3", false);
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && animator.GetCurrentAnimatorStateInfo(0).IsName("atack2"))
+        {
+            animator.SetBool("hit2", false);
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && animator.GetCurrentAnimatorStateInfo(0).IsName("atack1"))
+        {
+            animator.SetBool("hit1", false);
+            noOfClocks = 0;
+        }
+        if(Time.time - lastClickedTime > maxComboDelay)
+        {
+            noOfClocks = 0;
+        }
+        if(Time.time > nextFireTime)
+        {
+            if(Input.GetMouseButtonDown(0))
+            {
+                OnClick();
+            }
+        }
+    }
+
+    void OnClick()
+    {
+        lastClickedTime = Time.time;
+        noOfClocks++;
+        if(noOfClocks == 1)
+        {
+            animator.SetBool("hit3", true);
+        }
+        noOfClocks = Mathf.Clamp(noOfClocks, 0, 3);
+        if(noOfClocks >= 2 && animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && animator.GetCurrentAnimatorStateInfo(0).IsName("atack3"))
+            {
+            animator.SetBool("hit3", false);
+            animator.SetBool("hit2", true);
+        }
+        if (noOfClocks >= 3 && animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && animator.GetCurrentAnimatorStateInfo(0).IsName("atack2"))
+        {
+            animator.SetBool("hit2", false);
+            animator.SetBool("hit1", true);
+        }
+
+    }
+}
